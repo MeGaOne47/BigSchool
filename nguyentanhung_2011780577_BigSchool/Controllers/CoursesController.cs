@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Data.Entity;
 
 namespace nguyentanhung_2011780577_BigSchool.Controllers
 {
@@ -47,6 +48,25 @@ namespace nguyentanhung_2011780577_BigSchool.Controllers
             _dbContext.Courses.Add(course);
             _dbContext.SaveChanges();
             return RedirectToAction("Index","Home");
+        }
+
+        [Authorize]
+        public ActionResult Attending()
+        {
+            var userId = User.Identity.GetUserId();
+
+            var courses = _dbContext.Attendances
+            .Where(a => a.AttendeeId == userId)
+            .Select(a=>a.Cource)
+            .Include(l => l.Lecturer)
+            .Include(l => l.Category)
+            .ToList();
+            var viewModel = new CoursesViewModel
+            {
+                UpcommingCourses = courses,
+                ShowAction = User.Identity.IsAuthenticated
+            };
+            return View(viewModel);
         }
     }
 }

@@ -2,8 +2,12 @@
 using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using nguyentanhung_2011780577_BigSchool.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Collections;
+using BigSchool.Models;
+using System.Collections.Generic;
 
 namespace nguyentanhung_2011780577_BigSchool.Models
 {
@@ -12,7 +16,16 @@ namespace nguyentanhung_2011780577_BigSchool.Models
     {
         [Required]
         [StringLength(255)]
-        public string Name { get; set; }    
+        public string Name { get; set; }
+        
+        public ICollection<Following> Followers { get; set; }
+        public ICollection<Following> Followees { get; set; }
+
+        public ApplicationUser() 
+        { 
+            Followers = new List<Following>();
+            Followees = new List<Following>();
+        }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
@@ -22,18 +35,4 @@ namespace nguyentanhung_2011780577_BigSchool.Models
         }
     }
 
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-    {
-        public DbSet<Course> Courses { get; set; }
-        public DbSet<Category> Categories { get; set; }
-        public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
-        {
-        }
-
-        public static ApplicationDbContext Create()
-        {
-            return new ApplicationDbContext();
-        }
-    }
 }
